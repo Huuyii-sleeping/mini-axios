@@ -24,6 +24,10 @@ export interface AxiosRequestConfig {
   params?: Params
   headers?: IHeaders | null
   baseURL?: string
+  timeout?: number
+  responseType?: XMLHttpRequestResponseType
+  // 适配器模式 多平台模式 函数是自定义适配器
+  adapter?: 'http' | 'xhr' | 'fetch' | ((config: AxiosRequestConfig) => AxiosPromise)
   validateStatus?: (status: number) => boolean
   paramsSerializer?: (params: Params) => string
 }
@@ -51,6 +55,7 @@ export type AxiosErrorCode =
   | 'ERR_CANCELED'
   | 'ERR_NOT_SUPPORT'
   | 'ERR_INVALID_URL'
+  | 'ERR_TIMEOUT'
 
 export interface AxiosError extends Error {
   isAxiosError: boolean

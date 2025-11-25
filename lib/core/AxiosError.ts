@@ -56,7 +56,8 @@ const descriptors: Record<string, { value: AxiosErrorCode }> = {}
   'ERR_BAD_REQUEST',
   'ERR_CANCELED',
   'ERR_NOT_SUPPORT',
-  'ERR_INVALID_URL'
+  'ERR_INVALID_URL',
+  'ERR_TIMEOUT'
 ].forEach((code) => {
   descriptors[code as AxiosErrorCode] = { value: code as AxiosErrorCode }
 })

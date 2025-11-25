@@ -2,6 +2,8 @@ import { AxiosRequestConfig } from './types'
 
 export default {
   method: 'GET',
+  timeout: 0,
+  adapter: 'xhr',
   headers: {
     common: {
       Accept: 'application/json, text/plain, */*'
