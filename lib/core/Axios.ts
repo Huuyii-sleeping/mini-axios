@@ -1,11 +1,13 @@
-import { AxiosRequestConfig, Axios as IAxios } from '@/types'
-import dispatchRequest from './dispatchRequest'
+import { AxiosRequestConfig, Axios as IAxios, Method } from '@/types'
+import dispatchRequest, { transformURL } from './dispatchRequest'
 import mergeConfig from './mergeConfig'
 
 export class Axios implements IAxios {
   defaults: AxiosRequestConfig
   constructor(initConfig: AxiosRequestConfig) {
     this.defaults = initConfig
+    this._eachMethodNoData()
+    this._eachMethodWithData()
   }
 
   request(url: string | AxiosRequestConfig, config: AxiosRequestConfig = {}): Promise<any> {
@@ -18,5 +20,35 @@ export class Axios implements IAxios {
     config = mergeConfig(this.defaults, config)
 
     return dispatchRequest(config)
+  }
+
+  getUri(config: AxiosRequestConfig): string {
+    return transformURL(mergeConfig(this.defaults, config))
+  }
+
+  // 加不加data的方法实现不同 进行方法的绑定
+  private _eachMethodNoData() {
+    ;(['get', 'delete', 'head', 'options'] as Method[]).forEach((method) => {
+      ;(Axios.prototype as Record<string, any>)[method] = (
+        url: string,
+        config: AxiosRequestConfig
+      ) => this.request(mergeConfig(config || {}, { method, url }))
+    })
+  }
+
+  private _eachMethodWithData() {
+    ;(['post', 'put', 'patch'] as Method[]).forEach((method) => {
+      const getHttpMethod =
+        (isForm: boolean) => (url: string, data: unknown, config: AxiosRequestConfig) =>
+          this.request(mergeConfig(config || {}), {
+            method,
+            url,
+            data,
+            headers: isForm ? { 'Content-type': 'multipart/form-data' } : {}
+          })
+
+      ;(Axios.prototype as Record<string, any>)[method] = getHttpMethod(false)
+      ;(Axios.prototype as Record<string, any>)[`${method}Form`] = getHttpMethod(true)
+    })
   }
 }

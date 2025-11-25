@@ -46,6 +46,23 @@ export const kindof = ((cache) => (thing: unknown) => {
 
 const { getPrototypeOf } = Object
 
+function _bind(fn: Function, thisArg: unknown) {
+  return function wrap() {
+    return fn.apply(thisArg, arguments)
+  }
+}
+
+export function extend<T, U>(to: T, from: U, thisArg?: unknown): T & U {
+  for (const key in from) {
+    if (thisArg && typeof from[key] === 'function') {
+      ;(to as T & U)[key] = _bind(from[key] as Function, thisArg) as any
+    } else {
+      ;(to as T & U)[key] = from[key] as any
+    }
+  }
+  return to as T & U
+}
+
 export function deepMerge(...args: any[]): any {
   const result = Object.create(null)
 

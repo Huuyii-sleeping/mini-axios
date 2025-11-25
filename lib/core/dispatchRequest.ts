@@ -1,5 +1,4 @@
-import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '@/types'
-import { createError, ErrorCodes } from './AxiosError'
+import { AxiosRequestConfig } from '@/types'
 import { buildURL, combineURL, isAbsoluteURL } from '@/helpers/url'
 import { flattenHeaders } from '@/helpers/headers'
 import adapters from '@/adapters'
