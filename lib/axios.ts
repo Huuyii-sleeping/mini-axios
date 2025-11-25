@@ -11,7 +11,7 @@ const axios = createInstance({
   method: 'GET',
   headers: {
     'Content-type': 'application/json'
-  },
+  }, 
   validateStatus(status) {
     return status >= 200 && status < 300
   }

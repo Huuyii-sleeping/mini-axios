@@ -9,7 +9,7 @@ function xhr(config: AxiosRequestConfig): AxiosPromise {
     const { url, method = 'GET', data, headers } = config
     const request = new XMLHttpRequest()
 
-    request.open(method.toUpperCase(), url!, true)
+    request.open(method.toUpperCase(), url!, true) 
 
     request.onreadystatechange = function () {
       // readyState是对象自身的状态（请求处理阶段） status是服务器对应的请求的HTTP响应状态码

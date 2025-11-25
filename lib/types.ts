@@ -11,7 +11,7 @@ export type Method =
   | 'HEAD'
   | 'options'
   | 'OPTIONS'
-  | 'patch'
+  | 'patch' 
   | 'PATCH'
 export type Params = Record<string, any>
 

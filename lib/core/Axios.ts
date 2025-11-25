@@ -8,7 +8,7 @@ export class Axios implements IAxios {
   }
 
   request(url: string | AxiosRequestConfig, config: AxiosRequestConfig = {}): Promise<any> {
-    if (typeof url === 'string') {
+    if (typeof url === 'string') { 
       config.url = url
     } else {
       config = url
