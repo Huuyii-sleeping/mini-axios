@@ -1,4 +1,5 @@
 import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '@/types'
+import { createError, ErrorCodes } from './AxiosError'
 
 export default function dispatchRequest(config: AxiosRequestConfig): Promise<any> {
   return xhr(config)
@@ -9,7 +10,7 @@ function xhr(config: AxiosRequestConfig): AxiosPromise {
     const { url, method = 'GET', data, headers } = config
     const request = new XMLHttpRequest()
 
-    request.open(method.toUpperCase(), url!, true) 
+    request.open(method.toUpperCase(), url!, true)
 
     request.onreadystatechange = function () {
       // readyState是对象自身的状态（请求处理阶段） status是服务器对应的请求的HTTP响应状态码
@@ -28,7 +29,7 @@ function xhr(config: AxiosRequestConfig): AxiosPromise {
     }
 
     request.onerror = function () {
-      reject(new Error('Network Error'))
+      reject(createError('Network Error', config, null, request))
     }
 
     request.send(data as any)
@@ -44,6 +45,16 @@ function settle(
   if (!response.status || !validateStatus || validateStatus(response.status)) {
     resolve(response)
   } else {
-    reject(new Error(`Request failed with status code ${response.status}`))
+    reject(
+      createError(
+        `Request failed with status code ${response.status}`,
+        response.config,
+        [ErrorCodes.ERR_BAD_REQUEST.value, ErrorCodes.ERR_BAD_RESPONSE.value][
+          Math.floor(response.status / 100) - 4
+        ],
+        response.request,
+        response
+      )
+    )
   }
 }
