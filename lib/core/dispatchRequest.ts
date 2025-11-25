@@ -1,8 +1,22 @@
 import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '@/types'
 import { createError, ErrorCodes } from './AxiosError'
+import { buildURL, combineURL, isAbsoluteURL } from '@/helpers/url'
+import { flattenHeaders } from '@/helpers/headers'
 
 export default function dispatchRequest(config: AxiosRequestConfig): Promise<any> {
+  processConfig(config)
   return xhr(config)
+}
+
+function processConfig(config: AxiosRequestConfig) {
+  config.url = transformURL(config)
+  config.headers = flattenHeaders(config.headers, config.method!)
+}
+
+export function transformURL(config: AxiosRequestConfig): string {
+  const { url, params, baseURL, paramsSerializer } = config
+  const fullPath = baseURL && !isAbsoluteURL(url!) ? combineURL(baseURL, url) : url!
+  return buildURL(fullPath, params, paramsSerializer)
 }
 
 function xhr(config: AxiosRequestConfig): AxiosPromise {
@@ -13,8 +27,9 @@ function xhr(config: AxiosRequestConfig): AxiosPromise {
     request.open(method.toUpperCase(), url!, true)
 
     request.onreadystatechange = function () {
-      // readyState是对象自身的状态（请求处理阶段） status是服务器对应的请求的HTTP响应状态码
+      // readyState是对象自身的状态（请求处理阶段）
       if (request.readyState !== 4) return
+      // status是服务器对应的请求的HTTP响应状态码
       if (request.status === 0) return
       const response: AxiosResponse = {
         data: request.response,

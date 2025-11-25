@@ -1,5 +1,7 @@
 import { getPrototypeOf, kindof } from '.'
 
+const ObjToString = Object.prototype.toString
+
 const typeofTest = (type: string) => (thing: unknown) => typeof thing === type
 
 export const isFunction = typeofTest('function') as (thing: unknown) => thing is Function
@@ -18,6 +20,10 @@ export const isArray = <T = any>(thing: unknown): thing is T[] => Array.isArray(
 
 export const isNil = (thing: unknown): boolean => thing == null
 
+export function isDate(thing: unknown): thing is Date {
+  return ObjToString.call(thing) === '[object Date]'
+}
+
 export function isPlainObject(thing: unknown): boolean {
   if (kindof(thing) !== 'object') {
     return false
@@ -32,3 +38,6 @@ export function isPlainObject(thing: unknown): boolean {
   )
 }
 
+export function isURLSearchParams(thing: unknown): thing is URLSearchParams {
+  return typeof thing !== 'undefined' && thing instanceof URLSearchParams
+}
