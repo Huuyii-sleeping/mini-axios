@@ -3,6 +3,9 @@ import { AxiosInstance, AxiosRequestConfig, AxiosStatic } from './types'
 import defaults from './default'
 import { extend } from './helpers'
 import mergeConfig from './core/mergeConfig'
+import CancelError from './cancel/CancelError'
+import CancelToken from './cancel/CancelToken'
+import isCancel from './cancel/isCancel'
 
 function createInstance(config: AxiosRequestConfig): AxiosInstance {
   const context = new Axios(config)
@@ -30,6 +33,12 @@ axios.spread = function spread(callback) {
     return callback.apply(null, arr)
   }
 }
+// 标记错误是否是“取消请求”的工具函数
+axios.isCancel = isCancel
+// 创建“取消令牌”的类 （旧版的取消请求的方法）
+axios.CancelToken = CancelToken
+// 标识“取消请求”的错误类型/类
+axios.CancelError = CancelError
 
 axios.Axios = Axios
 

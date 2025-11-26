@@ -97,8 +97,10 @@ export interface AxiosStatic extends AxiosInstance {
   create: (config?: AxiosRequestConfig) => AxiosInstance
   all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
   spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
+  isCancel: (value: unknown) => value is Cancel
   Axios: AxiosClassStatic
   CancelToken: CancelTokenStatic
+  CancelError: CancelStatic
 }
 
 export interface AxiosClassStatic {
@@ -119,8 +121,8 @@ export interface rejectedFn {
 }
 
 export interface CancelToken {
-  promise: Promise<string>
-  reason?: string
+  promise: Promise<Cancel>
+  reason?: Cancel
 
   throwIfRequested(): void
 }
@@ -131,7 +133,7 @@ export interface CancelTokenStatic {
 }
 
 export interface Canceler {
-  (message: string): void
+  (message: string, config: AxiosRequestConfig, request: XMLHttpRequest): void
 }
 
 export interface CancelExcutor {
@@ -141,4 +143,12 @@ export interface CancelExcutor {
 export interface CancelTokenSource {
   token: CancelToken
   cancel: Canceler
+}
+
+export interface Cancel {
+  message?: string
+}
+
+export interface CancelStatic {
+  new (message: string, config: AxiosRequestConfig, request: XMLHttpRequest): Cancel
 }
