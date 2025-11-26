@@ -67,20 +67,17 @@ export interface AxiosError extends Error {
 
 export interface Axios {
   defaults: AxiosRequestConfig
+  interceptors: {
+    request: AxiosInterceptorManager<AxiosRequestConfig>
+    response: AxiosInterceptorManager<AxiosResponse>
+  }
+  getUri: (config?: AxiosRequestConfig) => string
   request: <T = any>(config: AxiosRequestConfig) => AxiosPromise<T>
 }
 
 export interface AxiosInstance extends Axios {
   <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
   <T = any>(url: string, config: AxiosRequestConfig): AxiosPromise<T>
-}
-
-export interface AxiosStatic extends AxiosInstance {
-  create: (config?: AxiosRequestConfig) => AxiosInstance
-  all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
-  spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
-
-  Axios: AxiosClassStatic
 
   get<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
   delete<T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
@@ -95,6 +92,26 @@ export interface AxiosStatic extends AxiosInstance {
   patchForm<T = any>(url: string, data?: unknown, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosStatic extends AxiosInstance {
+  create: (config?: AxiosRequestConfig) => AxiosInstance
+  all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
+  spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
+  Axios: AxiosClassStatic
+}
+
 export interface AxiosClassStatic {
   new (config: AxiosRequestConfig): Axios
+}
+
+export interface AxiosInterceptorManager<T> {
+  use: (resolved: ResolvedFn<T>, rejected?: rejectedFn) => number
+  eject(id: number): void
+}
+
+export interface ResolvedFn<T> {
+  (val: T): T | Promise<T>
+}
+
+export interface rejectedFn {
+  (err: any): any
 }

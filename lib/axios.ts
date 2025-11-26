@@ -4,7 +4,7 @@ import defaults from './default'
 import { extend } from './helpers'
 import mergeConfig from './core/mergeConfig'
 
-function createInstance(config: AxiosRequestConfig): AxiosStatic {
+function createInstance(config: AxiosRequestConfig): AxiosInstance {
   const context = new Axios(config)
   // 这样是为了axios能直接将request使用
   const instance = Axios.prototype.request.bind(context)
@@ -12,10 +12,10 @@ function createInstance(config: AxiosRequestConfig): AxiosStatic {
   extend(instance, Axios.prototype, context)
   // 将一些实例方法放进去，比如config，defaults，interceptors等
   extend(instance, context)
-  return instance as AxiosStatic
+  return instance as AxiosInstance
 }
 
-const axios = createInstance(defaults)
+const axios = createInstance(defaults) as AxiosStatic
 
 axios.create = function create(config): AxiosInstance {
   return createInstance(mergeConfig(defaults, config))
