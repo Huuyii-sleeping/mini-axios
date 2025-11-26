@@ -7,7 +7,7 @@ const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined'
 export default isXHRAdapterSupported &&
   function xhr(config: AxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
-      const { url, method = 'GET', data, headers, timeout, responseType } = config
+      const { url, method = 'GET', data, headers, timeout, responseType, cancelToken } = config
       const request = new XMLHttpRequest()
 
       request.open(method.toUpperCase(), url!, true)
@@ -50,6 +50,14 @@ export default isXHRAdapterSupported &&
 
       if (timeout) {
         request.timeout = timeout
+      }
+
+      if (cancelToken) {
+        // 当状态已经改变了就会触发取消的回调
+        cancelToken.promise.then((reason) => {
+          request.abort()
+          reject(reason)
+        })
       }
 
       request.send(data as any)
