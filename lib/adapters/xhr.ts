@@ -1,23 +1,36 @@
+import CancelError from '@/cancel/CancelError'
 import { createError, ErrorCodes } from '@/core/AxiosError'
 import { settle } from '@/core/settle'
-import { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '@/types'
+import { AxiosPromise, AxiosRequestConfig, AxiosResponse, Cancel } from '@/types'
 
 const isXHRAdapterSupported = typeof XMLHttpRequest !== 'undefined'
 
 export default isXHRAdapterSupported &&
   function xhr(config: AxiosRequestConfig): AxiosPromise {
     return new Promise((resolve, reject) => {
-      const { url, method = 'GET', data, headers, timeout, responseType, cancelToken } = config
+      const {
+        url,
+        method = 'GET',
+        data,
+        headers,
+        timeout,
+        responseType,
+        cancelToken,
+        signal
+      } = config
       const request = new XMLHttpRequest()
 
-      const onCancel = (reason) => {
-        reject(reason)
+      const onCancel = (reason?: Cancel) => {
+        reject(reason ?? new CancelError('canceled', config, request))
         request.abort()
       }
 
       const done = () => {
         if (cancelToken) {
           cancelToken.unsubscribe(onCancel)
+        }
+        if (signal) {
+          signal.removeEventListener?.('abort', onCancel)
         }
       }
 
@@ -73,10 +86,11 @@ export default isXHRAdapterSupported &&
         request.timeout = timeout
       }
 
-      if (cancelToken) {
-        // 当状态已经改变了就会触发取消的回调
-
-        cancelToken.subscribe(onCancel)
+      if (cancelToken || signal) {
+        cancelToken && cancelToken.subscribe(onCancel)
+        if (signal) {
+          signal?.aborted ? onCancel() : signal?.addEventListener?.('abort', onCancel)
+        }
       }
 
       request.send(data as any)

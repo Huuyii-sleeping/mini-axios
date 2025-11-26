@@ -60,6 +60,7 @@ export default class CancelToken implements ICancelToken {
     }
   }
 
+  // 静态方法直接封装就行
   static source(): CancelTokenSource {
     let cancel!: Canceler
     const token = new CancelToken((c) => {
