@@ -72,3 +72,27 @@ export function buildURL(
   }
   return url
 }
+
+/**
+ * 用来判断给定的URL和当前页面的URL是否同源
+ */
+// a标签可以自动解析出href属性中的URL，协议以及主机名之类的 target = url
+const urlParsingNode = document.createElement('a') 
+// 当前页面的元信息
+const currentOrigin = resolveURL(window.location.href)
+
+export function isURLSameOrigin(requestURL: string): boolean {
+  const parsedOrigin = resolveURL(requestURL)
+  return (
+    parsedOrigin.protocol === currentOrigin.protocol && parsedOrigin.host === currentOrigin.host
+  )
+}
+
+function resolveURL(url: string) {
+  urlParsingNode.setAttribute('href', url)
+  const { protocol, host } = urlParsingNode
+  return {
+    protocol,
+    host
+  }
+}

@@ -6,6 +6,8 @@ export default {
   method: 'GET',
   timeout: 0,
   adapter: 'xhr',
+  xsrfCookieName: 'XSRF-TOKEN',
+  xsrfHeaderName: 'X-XSRF-TOKEN',
   headers: {
     common: {
       Accept: 'application/json, text/plain, */*'

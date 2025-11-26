@@ -24,6 +24,10 @@ export function isDate(thing: unknown): thing is Date {
   return ObjToString.call(thing) === '[object Date]'
 }
 
+export function isFormData(thing: unknown): thing is FormData {
+  return typeof thing !== 'undefined' && thing instanceof FormData
+}
+
 export function isPlainObject(thing: unknown): boolean {
   if (kindof(thing) !== 'object') {
     return false

@@ -37,8 +37,26 @@ export interface AxiosRequestConfig {
 
   cancelToken?: CancelToken
   signal?: GenericAbortSignal
+
+  // 是否是跨域请求
+  withCredentials?: boolean
+
+  // xsrf
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
+
+  // 配置http请求的相关凭证，目的是让客户端在请求的时候向服务器发送信息，通过服务器的检验
+  auth?: AxiosBasicCredentials
+
   validateStatus?: (status: number) => boolean
+
   paramsSerializer?: (params: Params) => string
+
+  onDownloadProgress?: (progressEvent: ProgressEvent) => void
+
+  onUploadProgress?: (progressEvent: ProgressEvent) => void
+
+  [k: string]: any
 }
 
 export interface AxiosTransformer {
@@ -172,4 +190,9 @@ export interface Cancel {
 
 export interface CancelStatic {
   new (message: string, config: AxiosRequestConfig, request: XMLHttpRequest): Cancel
+}
+
+export interface AxiosBasicCredentials {
+  username: string
+  password: string
 }
