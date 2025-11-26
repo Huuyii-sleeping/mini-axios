@@ -24,16 +24,25 @@ export interface AxiosRequestConfig {
   url?: string
   data?: unknown
   params?: Params
-  headers?: IHeaders | null
+  headers?: IHeaders | null | void
   baseURL?: string
   timeout?: number
   responseType?: XMLHttpRequestResponseType
   // 适配器模式 多平台模式 函数是自定义适配器
   adapter?: 'http' | 'xhr' | 'fetch' | ((config: AxiosRequestConfig) => AxiosPromise)
+
+  // 对请求头和请求数据进行自定义的转换 注重数据的转换
+  transformRequest?: AxiosTransformer | AxiosTransformer[]
+  transformResponse?: AxiosTransformer | AxiosTransformer[]
+
   cancelToken?: CancelToken
   signal?: GenericAbortSignal
   validateStatus?: (status: number) => boolean
   paramsSerializer?: (params: Params) => string
+}
+
+export interface AxiosTransformer {
+  (this: AxiosRequestConfig, data: any, headers: IHeaders | void | null, status?: number): any
 }
 
 export interface GenericAbortSignal {
@@ -42,7 +51,6 @@ export interface GenericAbortSignal {
   addEventListener?: (...args: any) => any
   removeEventListener?: (...args: any) => any
 }
-
 
 export interface AxiosResponse<T = any> {
   data: T
