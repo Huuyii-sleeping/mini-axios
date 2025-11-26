@@ -1,3 +1,5 @@
+import { ResolvePromise } from './cancel/CancelToken'
+
 export type Method =
   | 'get'
   | 'GET'
@@ -29,9 +31,18 @@ export interface AxiosRequestConfig {
   // 适配器模式 多平台模式 函数是自定义适配器
   adapter?: 'http' | 'xhr' | 'fetch' | ((config: AxiosRequestConfig) => AxiosPromise)
   cancelToken?: CancelToken
+  signal?: GenericAbortSignal
   validateStatus?: (status: number) => boolean
   paramsSerializer?: (params: Params) => string
 }
+
+export interface GenericAbortSignal {
+  readonly aborted: boolean
+  onabort?: (...args: any) => any | null
+  addEventListener?: (...args: any) => any
+  removeEventListener?: (...args: any) => any
+}
+
 
 export interface AxiosResponse<T = any> {
   data: T
@@ -123,7 +134,9 @@ export interface rejectedFn {
 export interface CancelToken {
   promise: Promise<Cancel>
   reason?: Cancel
-
+  // 发布订阅模式
+  subscribe: (listener: ResolvePromise) => void
+  unsubscribe: (listener: ResolvePromise) => void
   throwIfRequested(): void
 }
 

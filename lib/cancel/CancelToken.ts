@@ -1,7 +1,7 @@
 import { Canceler, CancelExcutor, CancelTokenSource, CancelToken as ICancelToken } from '@/types'
 import CancelError from './CancelError'
 
-interface ResolvePromise {
+export interface ResolvePromise {
   (reason?: CancelError): void
 }
 
@@ -9,10 +9,22 @@ export default class CancelToken implements ICancelToken {
   promise: Promise<CancelError>
   reason?: CancelError
 
+  private _listeners?: Array<ResolvePromise>
+
   constructor(executor: CancelExcutor) {
     let ResolvePromise: ResolvePromise
     this.promise = new Promise((resolve) => {
       ResolvePromise = resolve as ResolvePromise
+    })
+
+    this.promise.then((cancel) => {
+      if (!this._listeners) return
+
+      for (const listener of this._listeners) {
+        listener(cancel)
+      }
+
+      this._listeners = void 0
     })
 
     // 取消请求，将promise状态从pending到fullfilled
@@ -26,6 +38,26 @@ export default class CancelToken implements ICancelToken {
 
   throwIfRequested(): void {
     if (this.reason) throw this.reason
+  }
+
+  subscribe(listener: ResolvePromise) {
+    if (this.reason) {
+      listener(this.reason)
+      return    
+    }
+    if (this._listeners) {
+      this._listeners.push(listener)
+    } else {
+      this._listeners = [listener]
+    }
+  }
+
+  unsubscribe(listener: ResolvePromise) {
+    if (!this._listeners) return
+    const idx = this._listeners.indexOf(listener)
+    if (idx !== -1) {
+      this._listeners.splice(idx, 1)
+    }
   }
 
   static source(): CancelTokenSource {

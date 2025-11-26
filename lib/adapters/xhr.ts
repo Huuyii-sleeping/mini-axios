@@ -10,6 +10,17 @@ export default isXHRAdapterSupported &&
       const { url, method = 'GET', data, headers, timeout, responseType, cancelToken } = config
       const request = new XMLHttpRequest()
 
+      const onCancel = (reason) => {
+        reject(reason)
+        request.abort()
+      }
+
+      const done = () => {
+        if (cancelToken) {
+          cancelToken.unsubscribe(onCancel)
+        }
+      }
+
       request.open(method.toUpperCase(), url!, true)
 
       request.onreadystatechange = function () {
@@ -26,7 +37,17 @@ export default isXHRAdapterSupported &&
           request
         }
 
-        settle(resolve, reject, response)
+        settle(
+          (val) => {
+            done()
+            resolve(val)
+          },
+          (err) => {
+            reject(err)
+            done()
+          },
+          response
+        )
       }
 
       request.onerror = function () {
@@ -54,10 +75,8 @@ export default isXHRAdapterSupported &&
 
       if (cancelToken) {
         // 当状态已经改变了就会触发取消的回调
-        cancelToken.promise.then((reason) => {
-          request.abort()
-          reject(reason)
-        })
+
+        cancelToken.subscribe(onCancel)
       }
 
       request.send(data as any)
