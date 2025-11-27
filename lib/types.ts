@@ -1,3 +1,4 @@
+import { IncomingMessage } from 'http'
 import { ResolvePromise } from './cancel/CancelToken'
 
 export type Method =
