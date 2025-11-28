@@ -1,69 +1,31 @@
-# vite-ts-lib-starter
+# min-axios
 
-vite-ts-lib-starter 是一个基于 Vite 构建的 TypeScript 类库项目的起始模板。
+这个库主要是为了加深对axios的理解，做的一个小型的mini-axios(其实也不算小了，该有的内容基本都有)
 
-特点：
+## 功能特点
+ - 提供了类似于axios的基本功能，执行各种请求的过程
+ - 支持拦截器功能，用户可以在发送请求以及处理响应之前自定义操作
+ - 借鉴axios源码，利用promise链式调用
+ - 支持请求并发
+ - 请求取消
+ - 自定义配置选项
+ - 自定义适配器 xhr fetch http之类的
 
-- 使用 Vite 进行快速的开发和构建。
-- 使用 Vitest 进行测试，提供可靠的单元测试和集成测试支持。
-- 使用 Vitepress 构建文档，提供清晰、易于浏览的文档网站。
+ ## 安装
+ ```
+git clone https://github.com/Huuyii-sleeping/mini-axios.git
 
-## 使用
+pnpm install 
+ ```
 
-```shell
-$ git clone https://github.com/EricWXY/vite-ts-lib-starter.git
+## 快速开始
 ```
+import axios from 'toy-axios';
 
-## 项目结构
-
-```axapta
-├── src/              # 源代码目录
-│   ├── index.ts      # 入口文件
-├── tests/            # 测试目录
-│   ├── index.test.ts # 测试文件
-├── docs/             # 文档目录
-│   ├── .vitepress/   # Vitepress 配置目录
-│   ├── index.md     # 文档首页
-├── example/          # 示例目录
-│   ├── index.html    # 示例入口
-└── README.md         # 项目 README 文件
+// 发起一个 GET 请求
+axios.get('/api/data').then((response) => {
+  console.log(response.data);
+}).catch((error) => {
+  console.error(error);
+});
 ```
-
-## npm 命令
-
-启动示例服务
-```shell
-# 启动示例服务
-$ npm run dev
-
-# 运行自动化测试
-$ npm run test
-$ npm run test:watch
-
-# 语法检查
-$ npm run lint
-
-# 打包
-$ npm run build
-
-# 运行文档
-$ npm run docs:dev
-
-# 打包文档
-$ npm run docs:build
-
-# git commit
-$ npm run commit
-
-# 发布 npm
-$ npm run pub
-```
-
-## 许可证
-
-vite-ts-lib-starter 是根据 MIT 许可证发布的。
-
-
-## 联系方式
-
-我的邮箱是 `ericwxy@foxmail.com` 多多交流哦。
